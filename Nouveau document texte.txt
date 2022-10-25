@@ -1,0 +1,144 @@
+<p-orderList [value]="products" [listStyle]="{'height':'auto'}" header="List of Products" filterBy="nom" filterPlaceholder="Filter by nom" [dragdrop]="dragdrop">
+    <ng-template let-product pTemplate="item">
+        <div class="product-item">
+            <div class="product-list-detail">
+                <h5 class="mb-2">{{product.nom}}</h5>
+                <i class="pi pi-tag product-category-icon"></i>
+                <span class="product-category">{{product.category}}</span>
+            </div>
+            <div class="product-list-action">
+                <h6 class="mb-2">{{product.age}} ans</h6>
+                <span [class]="'product-badge status-'">{{product.prenom}}</span>
+            </div>
+        </div>
+    </ng-template>
+</p-orderList>
+
+
+
+
+
+<!--2-->
+
+
+<div class="card">
+
+
+
+
+
+
+    <h5>Vertical</h5>
+    <p-table [value]="products" [scrollable]="true" scrollHeight="400px"   #dt>
+
+        <ng-template pTemplate="caption">
+            <div class="flex">
+                <button type="button" pButton pRipple icon="pi pi-file-excel" (click)="exportExcel()" class="p-button-success mr-2"  pTooltip="XLS" tooltipPosition="bottom"></button>
+                <button type="button" pButton pRipple icon="pi pi-file-pdf" (click)="exportPdf()" class="p-button-warning mr-2" pTooltip="PDF" tooltipPosition="bottom"></button>
+            </div>
+        </ng-template>
+
+
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="min-width:200px">Nom</th>
+                <th style="min-width:200px">Prenom</th>
+                <th style="min-width:200px">Age</th>
+                <th style="min-width:200px">Département</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-products>
+            <tr>
+                <td style="min-width:200px">{{products.nom}}</td>
+                <td style="min-width:200px">{{products.prenom}}</td>
+                <td style="min-width:200px">{{products.age}}</td>
+                <td style="min-width:200px">{{products.departement.designation}}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+
+<div class="card">
+    <h5>Horizontal and Vertical</h5>
+
+    <p-table [value]="products" [scrollable]="true"  scrollHeight="400px" #dt >
+
+    
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width:100px">Id</th>
+                <th style="width:200px">Name</th>
+                <th style="width:200px">Country</th>
+                <th style="width:200px">Date</th>
+
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-products>
+            <tr>
+                <td style="width:100px">{{products.nom}}</td>
+                <td style="width:200px">{{products.prenom}}</td>
+                <td style="width:200px">{{products.age}}</td>
+                <td style="width:200px">{{products.departement.designation}}</td>
+
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="footer">
+            <tr>
+                <td style="width:100px">Id</td>
+                <td style="width:200px">Name</td>
+                <td style="width:200px">Country</td>
+                <td style="width:200px">Date</td>
+
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="caption">
+            <div class="flex align-items-center justify-content-between">
+                <h5 class="m-0">Manage Products</h5>
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Search..." />
+                </span>
+            </div>
+        </ng-template>
+    </p-table>
+</div>
+
+<div class="card">
+    <h5>Frozen Rows</h5>
+    <p-table [value]="products" [frozenValue]="products" [scrollable]="true" scrollHeight="400px">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Name</th>
+                <th>Country</th>
+                <th>Company</th>
+                <th>Representative</th>
+
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="frozenbody" let-products let-index="rowIndex">
+            <tr>
+                <td>{{products.nom}}</td>
+                <td>{{products.prenom}}</td>
+                <td>{{products.age}}</td>
+                <td>{{products.departement.designation}}</td>
+                <td style="flex: 0 0 4rem">
+                    <button pButton pRipple type="button" [icon]="'pi pi-lock-open'" (click)="toggleLock(products,true,index)" class="p-button-sm p-button-text"></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-products let-index="rowIndex">
+            <tr>
+                <td>{{products.nom}}</td>
+                <td>{{products.prenom}}</td>
+                <td>{{products.age}}</td>
+                <td>{{products.departement.designation}}</td>
+                <td style="flex: 0 0 4rem">
+                    <button pButton pRipple type="button" [icon]="'pi pi-lock'"  (click)="toggleLock(products,false,index)" class="p-button-sm p-button-text"></button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+

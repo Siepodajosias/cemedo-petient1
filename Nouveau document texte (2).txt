@@ -1,0 +1,110 @@
+import { Component, OnInit } from '@angular/core';
+import { PersonneService } from '../personne.service';
+import { OrderListFilterOptions } from 'primeng/orderlist';
+
+import * as jspdf from 'jspdf'
+import 'jspdf-autotable'
+import { UserOptions } from 'jspdf-autotable';
+
+
+interface jsPDFWithPlugin extends jspdf.jsPDF{
+    autoTable: (options: UserOptions)=> jspdf.jsPDF;
+}
+
+@Component({
+  selector: 'app-tableau',
+  templateUrl: './tableau.component.html',
+  styleUrls: ['./tableau.component.scss']
+})
+export class TableauComponent implements OnInit {
+
+  products:any[]=[];
+  dragdrop:boolean=true
+
+
+  scrollableCols: any[]=[];
+
+  unlockedCustomers: any[]=[];
+
+  lockedCustomers: any[]=[];
+
+  balanceFrozen: boolean = false;
+
+  rowGroupMetadata: any;
+
+
+
+  exportColumns: any[]=[];
+
+
+  constructor(private personneService: PersonneService) { }
+
+  ngOnInit(): void {
+    this.personneService.recupererPersonnes().subscribe({
+      next:(personne)=>{
+        this.products=personne
+      }
+    })
+
+    this.exportColumns = this.products.map(product => ({title: product.nom, dataKey: product.prenom}));
+  }
+
+
+
+toggleLock(data:any, frozen:any, index:any) {
+    if (frozen) {
+        this.lockedCustomers = this.lockedCustomers.filter((c, i) => i !== index);
+        this.unlockedCustomers.push(data);
+    }
+    else {
+        this.unlockedCustomers = this.unlockedCustomers.filter((c, i) => i !== index);
+        this.lockedCustomers.push(data);
+    }
+
+    this.unlockedCustomers.sort((val1, val2) => {
+        return val1.id < val2.id ? -1 : 1;
+    });
+}
+
+
+    exportPdf() {
+
+      const doc = new jspdf.jsPDF('portrait','px','a4') as jsPDFWithPlugin;
+
+            doc.autoTable({
+              head:this.exportColumns,
+              body:this.products
+            })
+        doc.save("Personne.pdf")
+    }
+
+
+exportExcel() {
+  import("xlsx").then(xlsx => {
+    const worksheet = xlsx.utils.json_to_sheet(this.products);
+    const workbook = { Sheets: { data: worksheet }, SheetNames: ["data"] };
+    const excelBuffer: any = xlsx.write(workbook, {
+      bookType: "xlsx",
+      type: "array"
+    });
+    this.saveAsExcelFile(excelBuffer, "products");
+  });
+}
+
+saveAsExcelFile(buffer: any, fileName: string): void {
+  import("file-saver").then(FileSaver => {
+    let EXCEL_TYPE =
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+    let EXCEL_EXTENSION = ".xlsx";
+    const data: Blob = new Blob([buffer], {
+      type: EXCEL_TYPE
+    });
+    FileSaver.saveAs(
+      data,
+      fileName + "_export_" + new Date().getTime() + EXCEL_EXTENSION
+    );
+  });
+}
+
+
+}
