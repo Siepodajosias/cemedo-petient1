@@ -1,0 +1,169 @@
+import { Component, Input, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { Departement } from '../departement';
+import { DepartementService } from '../departement.service';
+import { Personne } from '../personne';
+import { PersonneService } from '../personne.service';
+
+@Component({
+	selector: 'app-list-personne',
+	templateUrl: './list-personne.component.html',
+	styleUrls: ['./list-personne.component.scss']
+})
+export class ListPersonneComponent implements OnInit {
+
+	@Input() lists: Personne[] = [];
+	list: Personne = new Personne();
+	personnesDialog: any | boolean;
+	personneDialog: any | boolean;
+	personneForm: FormGroup = new FormGroup({});
+	personneFormUpdate: FormGroup = new FormGroup({});
+	filtereddepartement: any[] = [];
+	personne: any[] = [];
+	departement3: any[] = [];
+
+
+	activityValues: number[] = [0, 100];
+
+	departement: Departement = new Departement();
+
+	constructor(private confirmationService: ConfirmationService, private messageService: MessageService, private personneForms: FormBuilder,
+				private personneService: PersonneService, private departementService: DepartementService) {
+	}
+
+	ngOnInit(): void {
+
+		this.departementService.getDepartement().subscribe({
+			next: (a: any) => {
+				this.departement3 = a;
+			}
+		});
+		this.personneForm = this.personneForms.group({
+			nom: ['', [Validators.required, Validators.minLength(3)]],
+			prenom: ['', [Validators.required, Validators.maxLength(30)]],
+			age: ['', [Validators.required, Validators.maxLength(4)]],
+			departement: ['', [Validators.required, Validators.maxLength(30)]]
+		});
+		this.personneFormUpdate = this.personneForms.group({
+			id2: null,
+			nom2: ['', [Validators.required, Validators.minLength(3)]],
+			prenom2: ['', [Validators.required, Validators.maxLength(30)]],
+			age2: ['', [Validators.required, Validators.maxLength(4)]],
+			departement2: ['', [Validators.required, Validators.maxLength(30)]]
+		});
+	}
+
+	openNew() {
+		this.personnesDialog = true;
+		this.personne = this.lists;
+	}
+
+	editPersonne(list: Personne) {
+		this.personneDialog = true;
+		this.personneFormUpdate.setValue({
+			id2: list.id,
+			nom2: list.nom,
+			prenom2: list.prenom,
+			age2: list.age,
+			departement2: list.departement
+		});
+	}
+
+	// Fonction de suppression d'une personne
+	deletePersonne(list: Personne) {
+
+		this.confirmationService.confirm({
+			message: 'Êtes-vous sûr de vouloir supprimer ' + list.nom + '?',
+			header: 'Confirmer',
+			icon: 'pi pi-exclamation-triangle',
+			accept: () => {
+				this.lists = this.lists.filter(val => val.nom !== list.nom);
+				this.list = new Personne();
+				this.personneService.supprimerPersonne(list.id).subscribe({
+					next: (v: Personne) => {
+						this.messageService.add({key:"myKey1", severity: 'custom', summary: 'Warn', detail: 'Suppession éffectué', icon: 'pi-file' });
+					}
+				});
+			}
+		});
+	}
+
+	// Fonction d'enregistrement d'une personne
+	savePersonne(): void {
+		this.list.id = 11;
+		this.list.nom = this.personneForm.get('nom')?.value;
+		this.list.prenom = this.personneForm.get('prenom')?.value;
+		this.list.age = this.personneForm.get('age')?.value;
+		let a = this.personneForm.get('departement')?.value;
+		this.list.departement = a;
+		console.log(this.list);
+
+		this.personneService.enregistrerPersonne(this.list).subscribe({
+			next: (value: Personne) => {
+				console.log(value);
+				this.messageService.add({key:"myKey1", severity: 'success', summary: 'Service Message', detail: 'Personne enregistré' });
+			},
+			error: (e) => {
+
+			},
+			complete: () => {
+				this.personneForm.setValue({
+					nom: '',
+					prenom: '',
+					age: '',
+					departement: ''
+				});
+			}
+		});
+
+	}
+
+	// Fonction de mise à jour des informations d'une personne
+	updatePersonne(): void {
+		this.list.id = this.personneFormUpdate.get('id2')?.value;
+		this.list.nom = this.personneFormUpdate.get('nom2')?.value;
+		this.list.prenom = this.personneFormUpdate.get('prenom2')?.value;
+		this.list.age = this.personneFormUpdate.get('age2')?.value;
+		let a = this.personneFormUpdate.get('departement2')?.value;
+		this.list.departement = a;
+
+		console.log(this.list);
+
+		this.personneService.miseAjourPersonne(this.list).subscribe({
+			next: (value: Personne) => {
+				this.messageService.add({ key:"myKey2",severity: 'info', summary: 'Service Message', detail: 'mise à jour éffectué' });
+			},
+			error: (e) => {
+
+			},
+			complete: () => {
+				this.personneFormUpdate.setValue({
+					id2: null,
+					nom2: '',
+					prenom2: '',
+					age2: '',
+					departement2: ''
+				});
+			}
+
+		});
+
+	}
+
+	filterDepartement(event: any) {
+
+		let filtered: any[] = [];
+		let query = event.query;
+
+		for (let i = 0; i < this.departement3.length; i++) {
+			let dep = this.departement3[i];
+			if (dep.designation.toLowerCase().indexOf(query.toLowerCase()) == 0) {
+				filtered.push(dep);
+			}
+		}
+
+		this.filtereddepartement = filtered;
+	}
+
+}
