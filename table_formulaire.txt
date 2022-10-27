@@ -1,0 +1,123 @@
+<div class="card">
+    <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+            <button type="button" pButton pRipple icon="pi pi-file-excel" (click)="exportExcel()" class="p-button-success mr-2"  pTooltip="XLS" tooltipPosition="bottom"></button>
+            <button type="button" pButton pRipple icon="pi pi-file-pdf" (click)="exportPdf()" class="p-button-warning mr-2" pTooltip="PDF" tooltipPosition="bottom"></button>
+        </ng-template>
+
+        <ng-template pTemplate="right">
+            
+            <button pButton pRipple label="Enregistrer" icon="pi pi-send" class="p-button-help" (click)="openNew()"></button>
+        </ng-template>
+    </p-toolbar>
+
+    <p-table #dt  [value]="personnes"  [scrollable]="true" scrollHeight="550px"
+    [globalFilterFields]="['nom','prenom','age']"
+    [loading]="loading"
+    [filterDelay]="0"
+        >
+        <ng-template pTemplate="caption">
+            <div class="flex align-items-center justify-content-between">
+                <h5 class="m-0">Personne</h5>
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+
+                    <input pInputText type="text"
+                    (input)="dt.filterGlobal(getEventValue($event), 'contains')"
+                     placeholder="Rechercher..." 
+                    />
+
+                </span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-personne>
+            <tr>
+                <th pSortableColumn="nom">Nom <p-sortIcon field="nom"></p-sortIcon></th>
+                <th pSortableColumn="prenom">Prenom <p-sortIcon field="prenom"></p-sortIcon></th>
+                <th pSortableColumn="age">Age <p-sortIcon field="age"></p-sortIcon></th>
+                <th pSortableColumn="departement">Département</th>
+
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-personne let-index="rowIndex">
+            <tr>
+                <td style="min-width:200px">{{personne.nom}}</td>
+                <td style="min-width:200px">{{personne.prenom}}</td>
+                <td style="min-width:200px">{{personne.age}}</td>
+                <td style="min-width:200px">{{personne.departement.designation}}</td>
+                <td style="flex: 0 0 4rem">
+                    <button pButton pRipple type="button"  icon="pi pi-pencil"  (click)="toggleLock(personne,false,index)" 
+                    class="p-button-rounded p-button-text"
+                    ></button>
+                </td>
+                <td style="flex: 0 0 4rem">
+                    <button pButton pRipple type="button"  icon="pi pi-angle-right"  (click)="toggleLock(personne,false,index)" 
+                    class="p-button-rounded p-button-text"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            <div class="flex align-items-center justify-content-between">
+             Total: {{personne ? personne.length : 0 }}
+            </div>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+
+
+
+<p-dialog [(visible)]="personneDialog" [style]="{width: '450px'}" header="mise à jour personne" [modal]="true" styleClass="p-fluid">
+
+	<form (ngSubmit)="updatePersonne()">
+
+		<div class="grid">
+
+			<div class="col-12">
+				<p-autoComplete  [showEmptyMessage]="true"   field="designation" [minLength]="1"></p-autoComplete>
+			</div>
+			<div class="col-12">
+                    <span class="p-float-label">
+                        <input type="text" id="inputtext1" pInputText>
+                        <label for="inputtext1">Nom</label>
+                    </span>
+			</div>
+
+             <p-divider layout="vertical"></p-divider>
+
+			<div class="col-12">
+				<span class="p-float-label">
+					<input type="text" id="inputtext2" pInputText >
+					<label for="inputtext2">Prenom</label>
+				</span>
+			</div>
+            <p-divider align="left" type="dashed">
+                <b>Left</b>
+              </p-divider>
+			<div class="col-12">
+                    <span class="p-float-label">
+                        <input type="text" id="inputtext3" pInputText>
+                        <label for="inputtext3">Age</label>
+                    </span>
+			</div>
+
+
+			<div class="col-12">
+                <p-divider align="left">
+                    <div class="inline-flex align-items-center">
+                      <i class="pi pi-user mr-2"></i>
+                      <b>Icon</b>
+                    </div>
+                  </p-divider>
+        </div>
+
+
+			<button [disabled]="!personneFormUpdate.valid" type="submit" pButton pRipple label="Save" icon="pi pi-check" class="p-button-text p-button-sm"></button>
+
+		</div>
+
+	</form>
+</p-dialog>

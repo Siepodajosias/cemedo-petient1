@@ -1,0 +1,187 @@
+import { Component, OnInit,ViewChild } from '@angular/core';
+import { PersonneService } from '../personne.service';
+import { OrderListFilterOptions } from 'primeng/orderlist';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Personne } from '../personne';
+
+import * as saveAs from 'file-saver';
+
+import * as jspdf from 'jspdf'
+import 'jspdf-autotable'
+import { UserOptions } from 'jspdf-autotable';
+
+
+import { Table } from 'primeng/table'
+
+
+interface jsPDFWithPlugin extends jspdf.jsPDF{
+    autoTable: (options: UserOptions)=> jspdf.jsPDF;
+}
+
+@Component({
+  selector: 'app-tableau',
+  templateUrl: './tableau.component.html',
+  styleUrls: ['./tableau.component.scss']
+})
+export class TableauComponent implements OnInit {
+
+  personne:any[]=[];
+	list: Personne = new Personne();
+  personnes:any[]=[];
+  dragdrop:boolean=true
+
+  @ViewChild('dt') dt: Table | undefined | any;
+
+  scrollableCols: any[]=[];
+
+  unlockedCustomers: any[]=[];
+
+  lockedCustomers: any[]=[];
+
+  balanceFrozen: boolean = false;
+
+  rowGroupMetadata: any;
+
+  loading: boolean = true;
+
+  exportColumns: any[]=[];
+
+	personneFormUpdate: FormGroup = new FormGroup({});
+	personneDialog: any | boolean;
+
+  constructor(private personneService: PersonneService,private personneForms: FormBuilder,) { }
+
+  ngOnInit(): void {
+
+    this.personneService.recupererPersonnes().subscribe({
+      next:(personne)=>{
+        this.personne=personne
+        this.personnes=personne
+        this.loading=false
+      },
+      error:(e:any)=>{
+
+      },
+      complete:()=>{
+        
+      }
+    })
+
+    this.exportColumns = this.personne.map(personne => ({title: personne.nom, dataKey: personne.prenom}));
+
+    this.personneFormUpdate = this.personneForms.group({
+			id2: null,
+			nom2: ['', [Validators.required, Validators.minLength(3)]],
+			prenom2: ['', [Validators.required, Validators.maxLength(30)]],
+			age2: ['', [Validators.required, Validators.maxLength(4)]],
+			departement2: ['', [Validators.required, Validators.maxLength(30)]]
+		});
+  }
+
+
+
+toggleLock(data:any, frozen:any, index:any) {
+
+  console.log(data);
+    if (frozen) {
+        this.lockedCustomers = this.lockedCustomers.filter((c, i) => i !== index);
+        this.unlockedCustomers.push(data);
+    }
+    else {
+        this.unlockedCustomers = this.unlockedCustomers.filter((c, i) => i !== index);
+        this.lockedCustomers.push(data);
+    }
+
+    this.unlockedCustomers.sort((val1, val2) => {
+        return val1.id < val2.id ? -1 : 1;
+    });
+}
+
+
+    exportPdf() {
+
+      const doc = new jspdf.jsPDF('portrait','px','a4') as jsPDFWithPlugin;
+
+            doc.autoTable({
+              head:this.exportColumns,
+              body:this.personne
+            })
+        doc.save("Personne.pdf")
+    }
+
+
+exportExcel() {
+  import("xlsx").then(xlsx => {
+    const worksheet = xlsx.utils.json_to_sheet(this.personne);
+    const workbook = { Sheets: { data: worksheet }, SheetNames: ["data"] };
+    const excelBuffer: any = xlsx.write(workbook, {
+      bookType: "xlsx",
+      type: "array"
+    });
+    this.saveAsExcelFile(excelBuffer, "personne");
+  });
+}
+
+saveAsExcelFile(buffer: any, fileName: string): void {
+
+    let EXCEL_TYPE =
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+    let EXCEL_EXTENSION = ".xlsx";
+    const data: Blob = new Blob([buffer], {
+      type: EXCEL_TYPE
+    });
+      saveAs(
+      data,
+      fileName + "_export_" + new Date() + EXCEL_EXTENSION
+    );
+
+}
+
+applyFilterGlobal($event:any, stringVal:any) {
+  this.dt.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
+}
+
+
+getEventValue($event:any) :string {
+  console.log($event.target.value);
+  return $event.target.value;
+} 
+
+
+updatePersonne(): void {
+  this.list.id = this.personneFormUpdate.get('id2')?.value;
+  this.list.nom = this.personneFormUpdate.get('nom2')?.value;
+  this.list.prenom = this.personneFormUpdate.get('prenom2')?.value;
+  this.list.age = this.personneFormUpdate.get('age2')?.value;
+  let a = this.personneFormUpdate.get('departement2')?.value;
+  this.list.departement = a;
+
+  console.log(this.list);
+/*
+  this.personneService.miseAjourPersonne(this.list).subscribe({
+    next: (value: Personne) => {
+      this.messageService.add({ key:"myKey2",severity: 'info', summary: 'Service Message', detail: 'mise à jour éffectué' });
+    },
+    error: (e) => {
+
+    },
+    complete: () => {
+      this.personneFormUpdate.setValue({
+        id2: null,
+        nom2: '',
+        prenom2: '',
+        age2: '',
+        departement2: ''
+      });
+    }
+
+  });
+*/
+}
+
+openNew() {
+  this.personneDialog = true;
+}
+
+
+}
