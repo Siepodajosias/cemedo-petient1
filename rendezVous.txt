@@ -1,0 +1,245 @@
+
+<!--admin-->
+<div class="surface-ground px-4 py-5 md:px-6 lg:px-8">
+    <div class="grid">
+
+        <div class="col-12 md:col-6 lg:col-4">
+            <div class="surface-card shadow-2 p-3 border-round">
+                <div class="flex justify-content-between mb-3">
+                    <div>
+                        <span class="block text-500 font-medium mb-3">Rendez-vous éffectuer</span>
+                        <div class="text-900 font-medium text-xl">152</div>
+                    </div>
+                    <div class="flex align-items-center justify-content-center bg-blue-100 border-round" style="width:2.5rem;height:2.5rem">
+                        <i class="pi pi-window-minimize text-blue-500 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 md:col-6 lg:col-4">
+            <div class="surface-card shadow-2 p-3 border-round">
+                <div class="flex justify-content-between mb-3">
+                    <div>
+                        <span class="block text-500 font-medium mb-3">Rendez-vous en cour..</span>
+                        <div class="text-900 font-medium text-xl">100</div>
+                    </div>
+                    <div class="flex align-items-center justify-content-center bg-blue-100 border-round" style="width:2.5rem;height:2.5rem">
+                        <i class="pi pi-window-maximize text-green-500 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 md:col-6 lg:col-4">
+            <div class="surface-card shadow-2 p-3 border-round">
+                <div class="flex justify-content-between mb-3">
+                    <div>
+                        <span class="block text-500 font-medium mb-3">Rendez-vous annuler</span>
+                        <div class="text-900 font-medium text-xl">28441</div>
+                    </div>
+                    <div class="flex align-items-center justify-content-center bg-red-100 border-round" style="width:2.5rem;height:2.5rem">
+                        <i class="pi pi-sync text-cyan-500 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p-fieldset legend="Liste" [toggleable]="true">
+
+        <p-table #dt  [value]="personnes"  [scrollable]="true" scrollHeight="550px"
+        [globalFilterFields]="['nom','prenom','age']"
+        [loading]="loading"
+        [filterDelay]="0"
+            >
+            <ng-template pTemplate="caption">
+                <div class="flex align-items-center justify-content-between">
+                    <!--la class ne change rien-->
+                    <div class="left">
+                        <button type="button" pButton pRipple icon="pi pi-file-excel" (click)="exportExcel()" class="p-button-success mr-2"  pTooltip="XLS" tooltipPosition="bottom"></button>
+                        <button type="button" pButton pRipple icon="pi pi-file-pdf" (click)="exportPdf()" class="p-button-warning mr-2" pTooltip="PDF" tooltipPosition="bottom"></button>
+                    </div>
+    
+                    <span class="p-input-icon-left">
+                        <i class="pi pi-search"></i>
+    
+                        <input pInputText type="text"
+                        (input)="dt.filterGlobal(getEventValue($event), 'contains')"
+                         placeholder="Rechercher..." 
+                        />
+                    </span>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header" let-personne>
+                <tr>
+                    <th pSortableColumn="nom">Date de prise de rendez-vous<p-sortIcon field="nom"></p-sortIcon></th>
+                    <th pSortableColumn="prenom">Date de rendez-vous <p-sortIcon field="prenom"></p-sortIcon></th>
+                    <th pSortableColumn="age">Medecin <p-sortIcon field="age"></p-sortIcon></th>
+                    <th pSortableColumn="departement">Patient</th>
+                    <th ></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-personne let-index="rowIndex">
+                <tr>
+                    <td style="min-width:200px">{{personne.nom}}</td>
+                    <td style="min-width:200px">{{personne.prenom}}</td>
+                    <td style="min-width:200px">{{personne.age}}</td>
+                    <td style="min-width:200px">{{personne.departement.designation}}</td>
+    
+                    <td style="flex: 0 0 4rem">
+                        <button pButton pRipple type="button"  icon="pi pi-angle-right"  (click)="toggleLock(personne,false,index)" 
+                        class="p-button-rounded p-button-text"
+                        ></button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="summary">
+                <div class="flex align-items-center justify-content-between">
+                 Total: {{personne ? personne.length : 0 }} Rendez-vous
+                </div>
+            </ng-template>
+        </p-table>
+    </p-fieldset>
+</div>
+
+
+
+
+
+<!--medecin-->
+<div class="surface-ground px-4 py-5 md:px-6 lg:px-8">
+    <div class="grid">
+
+        <div class="col-12 md:col-6 lg:col-4">
+            <div class="surface-card shadow-2 p-3 border-round">
+                <div class="flex justify-content-between mb-3">
+                    <div>
+                        <span class="block text-500 font-medium mb-3">Rendez-vous éffectuer</span>
+                        <div class="text-900 font-medium text-xl">152</div>
+                    </div>
+                    <div class="flex align-items-center justify-content-center bg-blue-100 border-round" style="width:2.5rem;height:2.5rem">
+                        <i class="pi pi-window-minimize text-blue-500 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 md:col-6 lg:col-4">
+            <div class="surface-card shadow-2 p-3 border-round">
+                <div class="flex justify-content-between mb-3">
+                    <div>
+                        <span class="block text-500 font-medium mb-3">Rendez-vous en cour..</span>
+                        <div class="text-900 font-medium text-xl">100</div>
+                    </div>
+                    <div class="flex align-items-center justify-content-center bg-blue-100 border-round" style="width:2.5rem;height:2.5rem">
+                        <i class="pi pi-window-maximize text-green-500 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 md:col-6 lg:col-4">
+            <div class="surface-card shadow-2 p-3 border-round">
+                <div class="flex justify-content-between mb-3">
+                    <div>
+                        <span class="block text-500 font-medium mb-3">Rendez-vous annuler</span>
+                        <div class="text-900 font-medium text-xl">28441</div>
+                    </div>
+                    <div class="flex align-items-center justify-content-center bg-red-100 border-round" style="width:2.5rem;height:2.5rem">
+                        <i class="pi pi-sync text-cyan-500 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p-fieldset legend="Liste" [toggleable]="true">
+
+        <p-table #dt  [value]="personnes"  [scrollable]="true" scrollHeight="550px"
+        [globalFilterFields]="['nom','prenom','age']"
+        [loading]="loading"
+        [filterDelay]="0"
+            >
+            <ng-template pTemplate="caption">
+                <div class="flex align-items-center justify-content-between">
+                    <!--la class ne change rien-->
+                    <div class="left">
+                        <button type="button" pButton pRipple icon="pi pi-file-excel" (click)="exportExcel()" class="p-button-success mr-2"  pTooltip="XLS" tooltipPosition="bottom"></button>
+                        <button type="button" pButton pRipple icon="pi pi-file-pdf" (click)="exportPdf()" class="p-button-warning mr-2" pTooltip="PDF" tooltipPosition="bottom"></button>
+                        <button pButton pRipple label="Enregistrer" icon="pi pi-send" class="p-button-help" (click)="openNew()" pTooltip="Prendre un rendez-vous"></button>
+                    </div>
+    
+                    <span class="p-input-icon-left">
+                        <i class="pi pi-search"></i>
+    
+                        <input pInputText type="text"
+                        (input)="dt.filterGlobal(getEventValue($event), 'contains')"
+                         placeholder="Rechercher..." 
+                        />
+                    </span>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header" let-personne>
+                <tr>
+                    <th pSortableColumn="nom">Date de prise de rendez-vous<p-sortIcon field="nom"></p-sortIcon></th>
+                    <th pSortableColumn="prenom">Date de rendez-vous <p-sortIcon field="prenom"></p-sortIcon></th>
+                    <th pSortableColumn="age">Medecin <p-sortIcon field="age"></p-sortIcon></th>
+                    <th pSortableColumn="departement">Patient</th>
+                    <th ></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-personne let-index="rowIndex">
+                <tr>
+                    <td style="min-width:200px">{{personne.nom}}</td>
+                    <td style="min-width:200px">{{personne.prenom}}</td>
+                    <td style="min-width:200px">{{personne.age}}</td>
+                    <td style="min-width:200px">{{personne.departement.designation}}</td>
+    
+                    <td style="flex: 0 0 4rem">
+                        <button pButton pRipple type="button"  icon="pi pi-angle-right"  (click)="toggleLock(personne,false,index)" 
+                        class="p-button-rounded p-button-text"
+                        ></button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="summary">
+                <div class="flex align-items-center justify-content-between">
+                 Total: {{personne ? personne.length : 0 }} Rendez-vous
+                </div>
+            </ng-template>
+        </p-table>
+    </p-fieldset>
+</div>
+
+
+
+//module
+import {FieldsetModule} from 'primeng/fieldset';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
