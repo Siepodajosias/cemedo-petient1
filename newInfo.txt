@@ -1,0 +1,149 @@
+		<div class="col-12 md:col-12 lg:col-12">
+			<div class="surface-card shadow-4 p-3 border-round">
+
+				<p-toolbar styleClass="mb-4">
+					<ng-template pTemplate="left">
+						<h4>Tableau des gains</h4>
+					</ng-template>
+
+					<ng-template pTemplate="right">
+						<button type="button" pButton pRipple icon="pi pi-file-excel" (click)="exportExcel()" class="p-button-success mr-2" pTooltip="Export XLSX" tooltipPosition="bottom"></button>
+						<button type="button" pButton pRipple icon="pi pi-file-pdf" (click)="exportPdf()" class="p-button-warning mr-2" pTooltip="Export PDF" tooltipPosition="bottom"></button>
+					</ng-template>
+				</p-toolbar>
+
+				<p-table [value]="bilanGains" [paginator]="true" [rows]="10" currentPageReportTemplate="De {first} à {last} sur {totalRecords} lignes" [showCurrentPageReport]="true" responsiveLayout="scroll"
+						 styleClass="p-datatable-gridlines"
+						 [resizableColumns]="true"
+						 [rowsPerPageOptions]="[10,20,30,40]">
+					<ng-template pTemplate="header">
+						<tr>
+							<th pSortableColumn="nombreGains">Nb de gains
+								<p-sortIcon field="nombreGains"></p-sortIcon>
+							</th>
+							<th pSortableColumn="totalGains">Total des gains
+								<p-sortIcon field="totalGains"></p-sortIcon>
+							</th>
+							<th pSortableColumn="nombreGainsInferieur">Nb de gains< limite
+								<p-sortIcon field="nombreGainsInferieur"></p-sortIcon>
+							</th>
+							<th pSortableColumn="totalGainsInferieur">Total des gains< limite
+								<p-sortIcon field="totalGainsInferieur"></p-sortIcon>
+							</th>
+							<th pSortableColumn="nombreGainsSuperieur">Nb de gains> limite
+								<p-sortIcon field="nombreGainsSuperieur"></p-sortIcon>
+							</th>
+							<th pSortableColumn="totalGainsSuperieur">Total des gains> limite
+								<p-sortIcon field="totalGainsSuperieur"></p-sortIcon>
+							</th>
+						</tr>
+						<tr>	
+							<th>
+								<p-columnFilter type="text" field="nombreGains"></p-columnFilter>
+							</th>
+							<th>
+								<p-columnFilter type="text" field="totalGains"></p-columnFilter>
+							</th>
+							<th>
+								<p-columnFilter type="text" field="nombreGainsInferieur"></p-columnFilter>
+							</th>
+							<th>
+								<p-columnFilter type="text" field="totalGainsInferieur"></p-columnFilter>
+							</th>
+							<th>
+								<p-columnFilter type="text" field="nombreGainsSuperieur"></p-columnFilter>
+							</th>
+							<th>
+								<p-columnFilter type="text" field="totalGainsSuperieur"></p-columnFilter>
+							</th>
+						</tr>
+					</ng-template>
+					<ng-template pTemplate="body" let-bilanGains>
+						<tr>
+							<td class="text-right">{{bilanGains.nombreGains| nombre | replace: ',':' '}}</td>
+							<td class="text-right">{{bilanGains.totalGains| nombre | replace: ',':' '}}</td>
+							<td class="text-right">{{bilanGains.nombreGainsInferieur | nombre | replace: ',':' '}}</td>
+							<td class="text-right">{{bilanGains.totalGainsInferieur| nombre | replace: ',':' '}}</td>
+							<td class="text-right">{{bilanGains.nombreGainsSuperieur| nombre | replace: ',':' '}}</td>
+							<td class="text-right">{{bilanGains.totalGainsSuperieur| nombre | replace: ',':' '}}</td>
+						</tr>
+					</ng-template>
+				</p-table>
+			</div>
+		</div>
+
+
+
+   private primeNgConfig: PrimeNGConfig,
+   this.primeNgConfig.setTranslation({
+      startsWith: 'Commence par',
+      contains: 'Contient',
+      notContains: 'Ne contient pas',
+      endsWith: 'Fini par',
+      equals: 'Egale à',
+      notEquals: 'Différent de',
+      noFilter: 'Pas de filtre',
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		this.primeNgConfig.setTranslation({
+			dayNames: ['Dimanche',
+				'Lundi',
+				'Mardi',
+				'Mercredi',
+				'Jeudi',
+				'Vendredi',
+				'Samedi'],
+			dayNamesShort: ['Dim.',
+				'Lun.',
+				'Mar.',
+				'Mer.',
+				'Jeu.',
+				'Ven.',
+				'Sam.'],
+			dayNamesMin: ['Di',
+				'Lu',
+				'Ma',
+				'Me',
+				'Je',
+				'Ve',
+				'Sa'],
+			monthNames: ['Janvier',
+				'Fevrier',
+				'Mars',
+				'Avril',
+				'Mai',
+				'Juin',
+				'Juillet',
+				'Août',
+				'Septembre',
+				'Octobre',
+				'Novembre',
+				'Decembre'],
+			monthNamesShort: ['Janv.',
+				'Fevr.',
+				'Mars',
+				'Avri.',
+				'Mai',
+				'Juin',
+				'Juil.',
+				'Août',
+				'Sept.',
+				'Octo.',
+				'Novem.',
+				'Decem.'],
+		});
